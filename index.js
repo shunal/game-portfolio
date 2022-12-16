@@ -1,8 +1,8 @@
-import platform from './img/platform.png'
-console.log(platform)
+const img = new Image();
+img.src="./img/platform.png"
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
-console.log(c)
+console.log(img)
 
 //set canvas to fullscreen
 canvas.width = window.innerWidth;
@@ -62,7 +62,7 @@ class Platform {
 const player = new Player()
 const platforms = [
     new Platform({x:200, y:600}), 
-    new Platform({x: 500, y: 600})]
+    new Platform({x: 500, y: 500})]
 
 const keys = {
     right: {
