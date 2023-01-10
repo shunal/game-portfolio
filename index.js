@@ -14,7 +14,10 @@ const platformFloor = new Image();
 platformFloor.src = "./img/platform.png";
 
 const background = new Image();
-background.src = "./img/background.png";
+background.src = "./img/space.png";
+
+const backgroundReversed = new Image();
+backgroundReversed.src ="./img/spaceReverse.png"
 
 const hills = new Image();
 hills.src = "./img/hills.png";
@@ -22,8 +25,22 @@ hills.src = "./img/hills.png";
 const block = new Image();
 block.src = "./img/block.png";
 
+const bigName = new Image();
+bigName.src = "./img/name.png"
+
+const ufo = new Image();
+ufo.src = "./img/ufo.png"
+
+const flagpole = new Image();
+flagpole.src = "./img/flag.png"
+
+const groundFlower = new Image();
+groundFlower.src = "./img/flower.png"
+
+
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
+
 
 //set canvas to fullscreen
 canvas.width = 1024;
@@ -33,14 +50,14 @@ const gravity = 0.3;
 class Player {
   constructor() {
     this.position = {
-      x: 100,
+      x: 400,
       y: 100,
     };
     this.velocity = {
       x: 0,
       y: 1,
     };
-    this.speed = 5;
+    this.speed = 7;
     this.width = 66;
     this.height = 150;
     this.image = spriteStandRight;
@@ -119,41 +136,46 @@ class Platform {
 }
 
 const platforms = [
-  new Platform({ x: -1, y: 470, image: platformFloor }),
+  new Platform({ x:0, y: 470, image: platformFloor }),
   new Platform({ x: platformFloor.width - 1, y: 470, image: platformFloor }),
   new Platform({
-    x: platformFloor.width * 2 - 1,
+    x: platformFloor.width * 2 - 2,
     y: 470,
     image: platformFloor,
   }),
   new Platform({
-    x: platformFloor.width * 3 - 1,
+    x: platformFloor.width * 3 - 3,
     y: 470,
     image: platformFloor,
   }),
   new Platform({
-    x: platformFloor.width * 4 - 1,
+    x: platformFloor.width * 4 - 4,
     y: 470,
     image: platformFloor,
   }),
   new Platform({
-    x: platformFloor.width * 5 - 1,
+    x: platformFloor.width * 5 - 5,
     y: 470,
     image: platformFloor,
   }),
   new Platform({
-    x: platformFloor.width * 6 - 1,
+    x: platformFloor.width * 6 - 6,
     y: 470,
     image: platformFloor,
   }),
   new Platform({
-    x: platformFloor.width * 7 - 1,
+    x: platformFloor.width * 7 - 7,
     y: 470,
     image: platformFloor,
   }),
   new Platform({
-    x: platformFloor.width * 8 - 1,
+    x: platformFloor.width * 8 - 8,
     y: 470,
+    image: platformFloor,
+  }),
+  new Platform({
+    x: platformFloor.width * 3 + 400 - 8,
+    y: 470 - platformFloor.height,
     image: platformFloor,
   })
 ];
@@ -168,16 +190,40 @@ class GenericObject {
     this.width = image.width;
     this.height = image.height;
     this.speed = 5
+    this.size = image.size;
   }
   draw() {
     c.drawImage(this.image, this.position.x, this.position.y);
   }
 }
 const blocks = [new GenericObject({ x: 1200, y: -400, image: block })];
+const flowers = [
+  new GenericObject({ x: 1075, y: 430, image: groundFlower }),
+  new GenericObject({ x: 1200, y: 430, image: groundFlower }),
+  new GenericObject({ x: 1325, y: 430, image: groundFlower }),
+  new GenericObject({ x: 1450, y: 430, image: groundFlower }),
+  new GenericObject({ x: 1575, y: 430, image: groundFlower })
+];
+
+const flag = new GenericObject({ x: 2850, y: -30, image: flagpole })
+
+const ufos = [
+  new GenericObject({ x: 3200, y: -200, image: ufo }),
+  new GenericObject({ x: 3300, y: -200, image: ufo }),
+  new GenericObject({ x: 3400, y: -200, image: ufo }),
+  new GenericObject({ x: 3500, y: -200, image: ufo })
+
+  ];
 
 const genericObjects = [
   new GenericObject({ x: -1, y: -1, image: background }),
-  new GenericObject({ x: -1, y: -1, image: hills }),
+  new GenericObject({ x: background.width -1, y: -1, image: background}),
+ 
+
+
+  new GenericObject({ x: -600, y: -1, image: hills }),
+  new GenericObject({ x: -100, y: 30, image: bigName }),
+
 ];
 
 const player = new Player();
@@ -203,9 +249,18 @@ function animate() {
     genericObject.draw();
   });
 
+  flowers.forEach((flower) => {
+    flower.draw();
+  })
+  platforms.forEach((platform) => {platform.draw()});
+  flag.draw()
+  ufos.forEach((ufo) => {
+    ufo.draw()
+  })
 
+
+  //draw player last so he is in front of background and objects
   player.update();
-
   // stop player at left and middle of screen so platforms can scroll
   if (keys.right.pressed && player.position.x < 400) {
     player.velocity.x = player.speed;
@@ -227,7 +282,7 @@ function animate() {
             
           });
     } 
-    // platform scrolling logic
+    // platform/blocks scrolling logic
     if (keys.right.pressed) {
       scrollOffset += player.speed
       platforms.forEach((platform) => {
@@ -236,6 +291,15 @@ function animate() {
       blocks.forEach((block) => {
         block.position.x -= player.speed;
       });
+      flowers.forEach((flower) => {
+        flower.position.x -= player.speed;
+      });
+      flag.position.x -= player.speed;
+      ufos.forEach((ufo) => {
+        ufo.position.x -= player.speed;
+
+      })
+
     
       genericObjects.forEach((genericObject) => {
         genericObject.position.x -= player.speed * 0.66;
@@ -248,6 +312,14 @@ function animate() {
       blocks.forEach((block) => {
         block.position.x += player.speed;
       });
+      flowers.forEach((flower) => {
+        flower.position.x += player.speed;
+      });
+      flag.position.x += player.speed;
+      ufos.forEach((ufo) => {
+        ufo.position.x += player.speed;
+      });
+
       
       genericObjects.forEach((genericObject) => {
         genericObject.position.x += player.speed * 0.66;
@@ -262,12 +334,52 @@ function animate() {
         player.velocity.y = 0;
         player.velocity.y = 1;
         console.log("collision")
+
+        //ON COLLISION BRING UP FLOWERS FROM GROUND
+        flowers.forEach((flower) => {
+          setInterval(()=>{
+            if (flower.position.y !== 100) {
+              flower.position.y --
+            }
+          },20)
+        })
     }
   })
 
+  // ON FLAG POLE COLLISION UFOS FLY IN FROM RIGHT SIDE
+  let flagSpace = flag.position.x
+  // if (player.position.y - player.height + 7 <= flag.position.y && player.position.x >= flag.position.x && player.position.x <= flag.position.x + flag.width - 70 ) {
+    if (player.position.x > flag.position.x + 30){
+    player.speed = 0
+    setTimeout(() => {
+      player.speed=7
+    },1000)
+      setInterval(()=>{
+        if (ufos[0].position.x > flagSpace - 200) {
+          ufos[0].position.x --
+        }
+      },30)
+      setInterval(()=>{
+        if (ufos[1].position.x > flagSpace - 30) {
+          ufos[1].position.x --
+          
+        }
+      },30)
+      setInterval(()=>{
+        if (ufos[2].position.x > flagSpace + 140) {
+          ufos[2].position.x --
+        }
+      },30)
+      setInterval(()=>{
+        if (ufos[3].position.x > flagSpace + 310) {
+          ufos[3].position.x --
+        }
+      },30)
+      
+  }
+
   //platform collision detection
   platforms.forEach((platform) => {
-    platform.draw();
 
     if (
       player.position.y + player.height <= platform.position.y &&
@@ -284,8 +396,6 @@ function animate() {
     // alert("you win")
   }
 
-  if (scrollOffset > 400) {
-  }
 
 }
 animate();
