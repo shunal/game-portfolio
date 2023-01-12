@@ -19,14 +19,16 @@
         background-color: black;  
         align-items: center;
         justify-content: center;
-        /* height: 100vh; */
         }
+
         canvas{
             padding-left: 0;
             padding-right: 0;
             margin-left: auto;
             margin-right: auto;
             display: block;
+            justify-content: center;
+            align-items: center;
         }
 
     
@@ -60,14 +62,16 @@
   <body>
     <div id="navbar" class="row">
       <ul>
-        <li><a href="">Restart</a></li>
+        <li><a href="">Home</a></li>
         <li><a href="https://coruscating-queijadas-5542b5.netlify.app/">Less Interactive Portfolio</a></li>
         <li><a href="http://github.com/shunal">Github</a></li>
         <li><a href="https://www.linkedin.com/in/steven-hunal-02ab54b4/">LinkedIn</a></li>
       </ul>
     </div>
     <div class="row">
-        <canvas></canvas>
+        <canvas>
+          <div id="block"></div>
+        </canvas>
     </div>
 
   </body>

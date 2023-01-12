@@ -37,6 +37,20 @@ flagpole.src = "./img/flag.png"
 const groundFlower = new Image();
 groundFlower.src = "./img/flower.png"
 
+const flowersClosed = new Image();
+flowersClosed.src = "./img/flowersClosed.png";
+
+const arrow = new Image();
+arrow.src="./img/arrow.png"
+
+const rocketship = new Image();
+rocketship.src = "./img/rocketship.png"
+
+const rocketman = new Image();
+rocketman.src="./img/rocketman.png"
+
+const spacebar = new Image();
+spacebar.src="./img/spacebar.png"
 
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
@@ -50,7 +64,7 @@ const gravity = 0.3;
 class Player {
   constructor() {
     this.position = {
-      x: 400,
+      x: 100,
       y: 100,
     };
     this.velocity = {
@@ -174,6 +188,11 @@ const platforms = [
     image: platformFloor,
   }),
   new Platform({
+    x: platformFloor.width * 9 - 9,
+    y: 470,
+    image: platformFloor,
+  }),
+  new Platform({
     x: platformFloor.width * 3 + 400 - 8,
     y: 470 - platformFloor.height,
     image: platformFloor,
@@ -205,27 +224,41 @@ const flowers = [
   new GenericObject({ x: 1575, y: 430, image: groundFlower })
 ];
 
-const flag = new GenericObject({ x: 2850, y: -30, image: flagpole })
+
 
 const ufos = [
   new GenericObject({ x: 3200, y: -200, image: ufo }),
-  new GenericObject({ x: 3300, y: -200, image: ufo }),
+  new GenericObject({ x: 3300, y: -160, image: ufo }),
   new GenericObject({ x: 3400, y: -200, image: ufo }),
-  new GenericObject({ x: 3500, y: -200, image: ufo })
+  new GenericObject({ x: 3500, y: -160, image: ufo }),
+  new GenericObject({ x: 3600, y: -200, image: ufo }),
+
 
   ];
 
 const genericObjects = [
   new GenericObject({ x: -1, y: -1, image: background }),
   new GenericObject({ x: background.width -1, y: -1, image: background}),
- 
-
-
+  new GenericObject({ x: -1, y: background.height * -1, image: background}),
+  new GenericObject({ x: background.width -1, y: background.height * -1, image: background}),
+  new GenericObject({ x: -1, y: background.height * -2, image: background}),
+  new GenericObject({ x: background.width -1, y: background.height * -2, image: background}),
+  new GenericObject({ x: -1, y: background.height * -3, image: background}),
+  new GenericObject({ x: background.width -1, y: background.height * -3, image: background}),
+  new GenericObject({ x: -1, y: background.height * -4, image: background}),
+  new GenericObject({ x: background.width -1, y: background.height * -4, image: background}),
+  new GenericObject({ x: -1, y: background.height * -5, image: background}),
+  new GenericObject({ x: background.width -1, y: background.height * -5, image: background}),
+  new GenericObject({ x: -1, y: background.height * -6, image: background}),
+  new GenericObject({ x: background.width -1, y: background.height * -6, image: background}),
   new GenericObject({ x: -600, y: -1, image: hills }),
-  new GenericObject({ x: -100, y: 30, image: bigName }),
-
+  new GenericObject({ x: -175, y: -50, image: bigName }),
 ];
 
+const flashingArrow = new GenericObject({x:-70, y:0, image:arrow})
+const flag = new GenericObject({ x: 2850, y: -30, image: flagpole })
+const rocket = new GenericObject({x:5000,y: -100, image:rocketship})
+const spacebarPrompt = new GenericObject({x:5000,y: -100, image:spacebar})
 const player = new Player();
 
 const keys = {
@@ -235,9 +268,13 @@ const keys = {
   left: {
     pressed: false,
   },
+  up: {
+    pressed: false
+  }
 };
 
 let scrollOffset = 0;
+let verticalScroll= 0;
 
 // create loop
 function animate() {
@@ -252,11 +289,15 @@ function animate() {
   flowers.forEach((flower) => {
     flower.draw();
   })
-  platforms.forEach((platform) => {platform.draw()});
+  platforms.forEach((platform) => {
+    platform.draw()
+  });
   flag.draw()
   ufos.forEach((ufo) => {
     ufo.draw()
   })
+  flashingArrow.draw()
+  rocket.draw()
 
 
   //draw player last so he is in front of background and objects
@@ -266,11 +307,9 @@ function animate() {
     player.velocity.x = player.speed;
   } else if (
     (keys.left.pressed && player.position.x > 10) ||
-    (keys.left.pressed && scrollOffset === 0 && player.position.x > 0)
-  ) {
+    (keys.left.pressed && scrollOffset === 0 && player.position.x > 0)) {
     player.velocity.x = -player.speed;
   } else {
-
     player.velocity.x = 0;
 
     // BLOCK VERTICAL SCROLLING LOGIC
@@ -278,9 +317,8 @@ function animate() {
         blocks.forEach((block) => {
             if(block.position.y < 100) {
             block.position.y += block.speed;
-        }
-            
-          });
+        }          
+    });
     } 
     // platform/blocks scrolling logic
     if (keys.right.pressed) {
@@ -294,16 +332,17 @@ function animate() {
       flowers.forEach((flower) => {
         flower.position.x -= player.speed;
       });
-      flag.position.x -= player.speed;
       ufos.forEach((ufo) => {
         ufo.position.x -= player.speed;
-
-      })
-
-    
+      });
       genericObjects.forEach((genericObject) => {
         genericObject.position.x -= player.speed * 0.66;
       });
+      flag.position.x -= player.speed;
+      flashingArrow.position.x -= player.speed;
+      rocket.position.x -= player.speed;
+
+
     } else if (keys.left.pressed && (scrollOffset > 0)) {
         scrollOffset -= player.speed;
       platforms.forEach((platform) => {
@@ -315,17 +354,48 @@ function animate() {
       flowers.forEach((flower) => {
         flower.position.x += player.speed;
       });
-      flag.position.x += player.speed;
       ufos.forEach((ufo) => {
         ufo.position.x += player.speed;
       });
-
-      
+      flag.position.x += player.speed;      
       genericObjects.forEach((genericObject) => {
         genericObject.position.x += player.speed * 0.66;
       });
+      flashingArrow.position.x += player.speed;
+      rocket.position.x += player.speed;      
+    }  
+  }
+      //TESTING VERTICAL MOVEMENT
+
+  //CHANGE ROCKET IMAGE ON COLLISION
+  if(player.position.x === rocket.position.x) {
+    rocket.image = rocketman
+    player.position.y = 800
+    console.log(rocket.position.x)
+    player.speed=0
+  }
+  //MOVE ROCKET UP
+  if (keys.up.pressed && rocket.position.y > 40) {
+    rocket.position.y --  
+     console.log(rocket.position.y)
+  }
+  //MOVE BACKGROUND DOWN
+  else {
+    if(keys.up.pressed) {
+      genericObjects.forEach((genericObject) =>{
+        genericObject.position.y += 4
+      },
+      platforms.forEach((platform)=> {
+        platform.position.y += 4 
+      })
+      
+      )
     }
   }
+
+
+  
+
   //BLOCK COLLISION DETECTION
   // -70 because block.width is not accurately representing the size of the block
   blocks.forEach((block) => {
@@ -333,7 +403,9 @@ function animate() {
     if (player.position.y - player.height + 7 <= block.position.y && player.position.x >= block.position.x && player.position.x <= block.position.x + block.width - 70  ) {
         player.velocity.y = 0;
         player.velocity.y = 1;
-        console.log("collision")
+        // hides block on collision
+        block.position.y = canvas.height
+
 
         //ON COLLISION BRING UP FLOWERS FROM GROUND
         flowers.forEach((flower) => {
@@ -343,40 +415,40 @@ function animate() {
             }
           },20)
         })
+
     }
   })
 
   // ON FLAG POLE COLLISION UFOS FLY IN FROM RIGHT SIDE
-  let flagSpace = flag.position.x
-  // if (player.position.y - player.height + 7 <= flag.position.y && player.position.x >= flag.position.x && player.position.x <= flag.position.x + flag.width - 70 ) {
-    if (player.position.x > flag.position.x + 30){
+  if (player.position.y - player.height + 7 <= flag.position.y && player.position.x >= flag.position.x && player.position.x <= flag.position.x + flag.width) {
+      console.log("first")      
     player.speed = 0
     setTimeout(() => {
       player.speed=7
-    },1000)
-      setInterval(()=>{
-        if (ufos[0].position.x > flagSpace - 200) {
+    },900)
+
+      var handle =setInterval(()=>{
+        if (ufos[0].position.x > flag.position.x - 250) {
           ufos[0].position.x --
         }
-      },30)
-      setInterval(()=>{
-        if (ufos[1].position.x > flagSpace - 30) {
+        else if (ufos[1].position.x > flag.position.x - 100) {
           ufos[1].position.x --
-          
         }
-      },30)
-      setInterval(()=>{
-        if (ufos[2].position.x > flagSpace + 140) {
+        else if (ufos[2].position.x > flag.position.x + 50) {
           ufos[2].position.x --
         }
-      },30)
-      setInterval(()=>{
-        if (ufos[3].position.x > flagSpace + 310) {
+        else if (ufos[3].position.x > flag.position.x + 200) {
           ufos[3].position.x --
         }
-      },30)
-      
+        else if (ufos[4].position.x > flag.position.x + 350) {
+          ufos[4].position.x --
+        }
+        else clearInterval(handle)
+      },30)   
   }
+
+
+
 
   //platform collision detection
   platforms.forEach((platform) => {
@@ -396,13 +468,32 @@ function animate() {
     // alert("you win")
   }
 
+  flowers.forEach((flower) => {
+    if(flower.image === groundFlower) {
+      setTimeout(() => {
+        flower.image = flowersClosed
+      },600)
+  
+    }
+    else {
+      setTimeout(() => {
+        flower.image = groundFlower
+      },600)      
+    }
+  })
+
+
 
 }
 animate();
 
 //listens for keyCode property of event for movement wasd
 window.addEventListener("keydown", ({ keyCode }) => {
+  console.log(keyCode)
   switch (keyCode) {
+    case 32:
+      keys.up.pressed = true;
+      break;
     case 87:
       player.velocity.y -= 10;
       break;
@@ -428,6 +519,9 @@ window.addEventListener("keydown", ({ keyCode }) => {
 });
 window.addEventListener("keyup", ({ keyCode }) => {
   switch (keyCode) {
+    case 32:
+      keys.up.pressed = false;
+      break;
     case 87:
       // player.velocity.y -= 20
       break;
