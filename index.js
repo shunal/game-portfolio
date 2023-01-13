@@ -52,12 +52,21 @@ rocketman.src="./img/rocketman.png"
 const spacebar = new Image();
 spacebar.src="./img/spacebar.png"
 
+const comet = new Image();
+comet.src="./img/comet.png"
+
+const skillsLevel = new Image();
+skillsLevel.src="./img/skillsLevel.png"
+
+const hardskills = new Image();
+hardskills.src="./img/hardskills.png"
+
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
 
 //set canvas to fullscreen
-canvas.width = 1024;
+canvas.width = window.innerWidth;
 canvas.height = 576;
 const gravity = 0.3;
 //define Player
@@ -72,6 +81,7 @@ class Player {
       y: 1,
     };
     this.speed = 7;
+    // this.speed = 20
     this.width = 66;
     this.height = 150;
     this.image = spriteStandRight;
@@ -215,28 +225,29 @@ class GenericObject {
     c.drawImage(this.image, this.position.x, this.position.y);
   }
 }
-const blocks = [new GenericObject({ x: 1200, y: -400, image: block })];
+const blocks = [new GenericObject({ x: 1200, y: -400, image: comet })];
 const flowers = [
-  new GenericObject({ x: 1075, y: 430, image: groundFlower }),
-  new GenericObject({ x: 1200, y: 430, image: groundFlower }),
-  new GenericObject({ x: 1325, y: 430, image: groundFlower }),
-  new GenericObject({ x: 1450, y: 430, image: groundFlower }),
-  new GenericObject({ x: 1575, y: 430, image: groundFlower })
+  new GenericObject({ x: 1050, y: 700, image: groundFlower }),
+  new GenericObject({ x: 1200, y: 700, image: groundFlower }),
+  new GenericObject({ x: 1350, y: 700, image: groundFlower }),
+  new GenericObject({ x: 1500, y: 700, image: groundFlower }),
+  new GenericObject({ x: 1650, y: 700, image: groundFlower }),
+
 ];
 
 
 
 const ufos = [
-  new GenericObject({ x: 3200, y: -200, image: ufo }),
-  new GenericObject({ x: 3300, y: -160, image: ufo }),
-  new GenericObject({ x: 3400, y: -200, image: ufo }),
-  new GenericObject({ x: 3500, y: -160, image: ufo }),
-  new GenericObject({ x: 3600, y: -200, image: ufo }),
+  new GenericObject({ x: 4200, y: -200, image: ufo }),
+  new GenericObject({ x: 4300, y: -160, image: ufo }),
+  new GenericObject({ x: 4400, y: -200, image: ufo }),
+  new GenericObject({ x: 4500, y: -160, image: ufo }),
+  new GenericObject({ x: 4600, y: -200, image: ufo }),
 
 
   ];
 
-const genericObjects = [
+const spaceBackground = [
   new GenericObject({ x: -1, y: -1, image: background }),
   new GenericObject({ x: background.width -1, y: -1, image: background}),
   new GenericObject({ x: -1, y: background.height * -1, image: background}),
@@ -251,15 +262,26 @@ const genericObjects = [
   new GenericObject({ x: background.width -1, y: background.height * -5, image: background}),
   new GenericObject({ x: -1, y: background.height * -6, image: background}),
   new GenericObject({ x: background.width -1, y: background.height * -6, image: background}),
+]
+
+const genericObjects = [
   new GenericObject({ x: -600, y: -1, image: hills }),
   new GenericObject({ x: -175, y: -50, image: bigName }),
 ];
 
+const foreground = [
+  new GenericObject({ x: 1050, y: 50, image: skillsLevel }),
+  new GenericObject({ x: 1400, y: -250, image: hardskills })
+
+
+]
+
 const flashingArrow = new GenericObject({x:-70, y:0, image:arrow})
 const flag = new GenericObject({ x: 2850, y: -30, image: flagpole })
 const rocket = new GenericObject({x:5000,y: -100, image:rocketship})
-const spacebarPrompt = new GenericObject({x:5000,y: -100, image:spacebar})
+const spacebarPrompt = new GenericObject({x:4700,y: 800, image:spacebar})
 const player = new Player();
+
 
 const keys = {
   right: {
@@ -282,41 +304,56 @@ function animate() {
   c.fillStyle = "white";
   c.fillRect(0, 0, canvas.width, canvas.height);
 
+
+  spaceBackground.forEach((background) => {
+    background.draw();
+  })
   genericObjects.forEach((genericObject) => {
     genericObject.draw();
   });
 
+ 
+  
+  flag.draw()
+  ufos.forEach((ufo) => {
+    ufo.draw()
+  })
+  foreground.forEach((object) => {
+    object.draw()
+  })
   flowers.forEach((flower) => {
     flower.draw();
   })
   platforms.forEach((platform) => {
     platform.draw()
   });
-  flag.draw()
-  ufos.forEach((ufo) => {
-    ufo.draw()
-  })
   flashingArrow.draw()
   rocket.draw()
+  spacebarPrompt.draw()
 
 
   //draw player last so he is in front of background and objects
   player.update();
   // stop player at left and middle of screen so platforms can scroll
-  if (keys.right.pressed && player.position.x < 400) {
+  if (keys.right.pressed && player.position.x < window.innerWidth * .5) {
     player.velocity.x = player.speed;
   } else if (
     (keys.left.pressed && player.position.x > 10) ||
     (keys.left.pressed && scrollOffset === 0 && player.position.x > 0)) {
     player.velocity.x = -player.speed;
-  } else {
+  } 
+  // else if (scrollOffset === 4300) {
+    
+  // } 
+  else {
     player.velocity.x = 0;
 
     // BLOCK VERTICAL SCROLLING LOGIC
     if (scrollOffset > 100) {
         blocks.forEach((block) => {
-            if(block.position.y < 100) {
+            if(block.position.y < -100) {
             block.position.y += block.speed;
+
         }          
     });
     } 
@@ -335,12 +372,20 @@ function animate() {
       ufos.forEach((ufo) => {
         ufo.position.x -= player.speed;
       });
+      spaceBackground.forEach((background) => {
+        background.position.x -= player.speed * 0.33;
+      })
       genericObjects.forEach((genericObject) => {
         genericObject.position.x -= player.speed * 0.66;
+      });
+      foreground.forEach((object) => {
+        object.position.x -= player.speed;
       });
       flag.position.x -= player.speed;
       flashingArrow.position.x -= player.speed;
       rocket.position.x -= player.speed;
+      spacebarPrompt.position.x -= player.speed;
+
 
 
     } else if (keys.left.pressed && (scrollOffset > 0)) {
@@ -358,21 +403,34 @@ function animate() {
         ufo.position.x += player.speed;
       });
       flag.position.x += player.speed;      
+      spaceBackground.forEach((background) => {
+        background.position.x += player.speed * 0.33;
+      })
       genericObjects.forEach((genericObject) => {
         genericObject.position.x += player.speed * 0.66;
       });
+      foreground.forEach((object) => {
+        object.position.x += player.speed;
+      });
       flashingArrow.position.x += player.speed;
       rocket.position.x += player.speed;      
+      spacebarPrompt.position.x += player.speed;
+    
+
     }  
   }
       //TESTING VERTICAL MOVEMENT
 
   //CHANGE ROCKET IMAGE ON COLLISION
-  if(player.position.x === rocket.position.x) {
+  if(player.position.x === rocket.position.x && rocket.image=== rocketship) {
     rocket.image = rocketman
-    player.position.y = 800
+    player.position.y = 5000
     console.log(rocket.position.x)
     player.speed=0
+    spacebarPrompt.position.y = 100
+    
+    
+    
   }
   //MOVE ROCKET UP
   if (keys.up.pressed && rocket.position.y > 40) {
@@ -382,39 +440,49 @@ function animate() {
   //MOVE BACKGROUND DOWN
   else {
     if(keys.up.pressed) {
+      spaceBackground.forEach((background) => {
+        background.position.y += 4;
+      })
       genericObjects.forEach((genericObject) =>{
         genericObject.position.y += 4
       },
       platforms.forEach((platform)=> {
         platform.position.y += 4 
-      })
+      }),
+      spacebarPrompt.position.y += 4
       
       )
     }
   }
 
 
-  
+  console.log(scrollOffset)
 
   //BLOCK COLLISION DETECTION
   // -70 because block.width is not accurately representing the size of the block
   blocks.forEach((block) => {
     block.draw();
-    if (player.position.y - player.height + 7 <= block.position.y && player.position.x >= block.position.x && player.position.x <= block.position.x + block.width - 70  ) {
+
+    if (player.position.y - player.height + 7 <= block.position.y + 190 && player.position.x >= block.position.x && player.position.x <= block.position.x + block.width - 200 && player.position.x >= block.position.x +100 ) {
         player.velocity.y = 0;
         player.velocity.y = 1;
         // hides block on collision
         block.position.y = canvas.height
 
-
-        //ON COLLISION BRING UP FLOWERS FROM GROUND
-        flowers.forEach((flower) => {
-          setInterval(()=>{
-            if (flower.position.y !== 100) {
-              flower.position.y --
-            }
-          },20)
-        })
+        setInterval(()=>{
+          if (flowers[0].position.y !== -30){
+            flowers[0].position.y --
+          }
+          else if (flowers[1].position.y !== 60) {
+            flowers[1].position.y --
+          }
+          else if (flowers[2].position.y !== -30) {
+            flowers[2].position.y --
+          }
+          else if (flowers[3].position.y !== 160) {
+            flowers[3].position.y --
+          }
+        },20)
 
     }
   })
@@ -429,19 +497,19 @@ function animate() {
 
       var handle =setInterval(()=>{
         if (ufos[0].position.x > flag.position.x - 250) {
-          ufos[0].position.x --
+          ufos[0].position.x -=3
         }
         else if (ufos[1].position.x > flag.position.x - 100) {
-          ufos[1].position.x --
+          ufos[1].position.x -=3
         }
         else if (ufos[2].position.x > flag.position.x + 50) {
-          ufos[2].position.x --
+          ufos[2].position.x -=3
         }
         else if (ufos[3].position.x > flag.position.x + 200) {
-          ufos[3].position.x --
+          ufos[3].position.x -=3
         }
         else if (ufos[4].position.x > flag.position.x + 350) {
-          ufos[4].position.x --
+          ufos[4].position.x -=2
         }
         else clearInterval(handle)
       },30)   
