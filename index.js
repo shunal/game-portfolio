@@ -16,14 +16,8 @@ platformFloor.src = "./img/platform.png";
 const background = new Image();
 background.src = "./img/space.png";
 
-const backgroundReversed = new Image();
-backgroundReversed.src ="./img/spaceReverse.png"
-
 const hills = new Image();
 hills.src = "./img/hills.png";
-
-const block = new Image();
-block.src = "./img/block.png";
 
 const bigName = new Image();
 bigName.src = "./img/name.png"
@@ -73,7 +67,12 @@ planets.src="./img/planets.png"
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
-
+window.onload = function() {
+  if(!window.location.hash) {
+      window.location = window.location + '#loaded';
+      window.location.reload();
+  }
+}
 //set canvas to fullscreen
 canvas.width = window.innerWidth;
 canvas.height = 576;
@@ -333,16 +332,18 @@ function animate() {
   c.fillStyle = "white";
   c.fillRect(0, 0, canvas.width, canvas.height);
 
-
+  
   spaceBackground.forEach((background) => {
     background.draw();
   })
   genericObjects.forEach((genericObject) => {
     genericObject.draw();
   });
+  platforms.forEach((platform) => {
+    platform.draw()
+  });
  
- 
-  
+
   flag.draw()
   ufos.forEach((ufo) => {
     ufo.draw()
@@ -353,9 +354,7 @@ function animate() {
   flowers.forEach((flower) => {
     flower.draw();
   })
-  platforms.forEach((platform) => {
-    platform.draw()
-  });
+ 
   flashingArrow.draw()
   rocket.draw()
   spacebarPrompt.draw()
