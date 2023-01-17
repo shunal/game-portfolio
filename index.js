@@ -339,6 +339,9 @@ function animate() {
   genericObjects.forEach((genericObject) => {
     genericObject.draw();
   });
+  flowers.forEach((flower) => {
+    flower.draw();
+  })
   platforms.forEach((platform) => {
     platform.draw()
   });
@@ -351,9 +354,7 @@ function animate() {
   foreground.forEach((object) => {
     object.draw()
   })
-  flowers.forEach((flower) => {
-    flower.draw();
-  })
+
  
   flashingArrow.draw()
   rocket.draw()
