@@ -371,9 +371,7 @@ function animate() {
     (keys.left.pressed && scrollOffset === 0 && player.position.x > 0)) {
     player.velocity.x = -player.speed;
   } 
-  // else if (scrollOffset === 4300) {
     
-  // } 
   else {
     player.velocity.x = 0;
 
@@ -448,7 +446,6 @@ function animate() {
 
     }  
   }
-      //TESTING VERTICAL MOVEMENT
   //CHANGE ROCKET IMAGE ON COLLISION
   if(player.position.x === rocket.position.x && rocket.image=== rocketship) {
     rocket.image = rocketman
@@ -600,10 +597,12 @@ animate();
 //listens for keyCode property of event for movement wasd
 window.addEventListener("keydown", ({ keyCode }) => {
   switch (keyCode) {
+    //rocket case 32
     case 32:
       keys.up.pressed = true;
       break;
     case 87:
+      if (event.repeat) {return}
       player.velocity.y -= 10;
       break;
     case 65:
@@ -611,12 +610,6 @@ window.addEventListener("keydown", ({ keyCode }) => {
       player.currentSprite = player.sprites.run.left;
       player.currentCurrentCropWidth = player.sprites.run.cropWidth;
       player.width = player.sprites.run.width;
-      break;
-
-    //removed down
-    // case 83:
-    //   player.velocity.y += 10;
-
       break;
     case 68:
       keys.right.pressed = true;
@@ -630,9 +623,9 @@ window.addEventListener("keyup", ({ keyCode }) => {
   switch (keyCode) {
     case 32:
       keys.up.pressed = false;
+
       break;
     case 87:
-      // player.velocity.y -= 20
       break;
     case 65:
       keys.left.pressed = false;
@@ -640,10 +633,7 @@ window.addEventListener("keyup", ({ keyCode }) => {
       player.currentCurrentCropWidth = player.sprites.stand.cropWidth;
       player.width = player.sprites.stand.width;
       break;
-    case 83:
-      // player.velocity.y += 20
-
-      break;
+    
     case 68:
       keys.right.pressed = false;
       player.currentSprite = player.sprites.stand.right;
